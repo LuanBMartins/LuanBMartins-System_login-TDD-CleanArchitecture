@@ -5,14 +5,14 @@ class LoginRouter {
   route (httpRequest) {
     try {
       if (!httpRequest) {
-        throw new HttpError(500, 'Server Error!')
+        throw new HttpError(500, '', 'Internal Server Error')
       }
       const { email, password } = httpRequest.body
       if (!email || !password) {
-        throw new HttpError(400, 'incorrect parameters!')
+        throw new HttpError(400, '', 'badRequest')
       }
     } catch (error) {
-      return HttpResponse(error.status, error.message)
+      return HttpResponse.error(error)
     }
   }
 }
