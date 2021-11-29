@@ -1,8 +1,12 @@
 const LoginRouter = require('./login-router')
 
+const makeSut = () => {
+  return new LoginRouter()
+}
+
 describe('login router', () => {
   test('Should return 400 if no email is provided', () => {
-    const sut = new LoginRouter()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         password: 'password'
@@ -14,7 +18,7 @@ describe('login router', () => {
   })
 
   test('Should return 400 if no password is provided', () => {
-    const sut = new LoginRouter()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         email: 'any'
@@ -26,7 +30,7 @@ describe('login router', () => {
   })
 
   test('Should return 500 if no httpRequest is provided', () => {
-    const sut = new LoginRouter()
+    const sut = makeSut()
     const httpResponse = sut.route()
     expect(httpResponse.statusCode).toBe(500)
   })
