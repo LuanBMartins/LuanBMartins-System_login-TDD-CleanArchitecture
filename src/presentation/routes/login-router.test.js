@@ -1,24 +1,4 @@
-const HttpError = require('../../utils/error')
-const HttpResponse = require('../../utils/response')
-
-class LoginRouter {
-  route (httpRequest) {
-    try {
-      if (!httpRequest) {
-        throw new HttpError(500, 'Unexpected Error!', 'Internal Server Error')
-      }
-      const { email, password } = httpRequest.body
-      if (!email) {
-        throw new HttpError(400, 'invalid: Email', 'badRequest')
-      }
-      if (!password) {
-        throw new HttpError(400, 'invalid: Password', 'badRequest')
-      }
-    } catch (error) {
-      return HttpResponse.error(error)
-    }
-  }
-}
+const LoginRouter = require('./login-router')
 
 describe('login router', () => {
   test('Should return 400 if no email is provided', () => {
