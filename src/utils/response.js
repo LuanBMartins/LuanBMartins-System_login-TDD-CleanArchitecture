@@ -1,6 +1,6 @@
 module.exports = function (status, content) {
   return {
-    statusCode: status,
-    body: content
+    statusCode: status || 500,
+    body: content || 'unexpected error!'
   }
 }
