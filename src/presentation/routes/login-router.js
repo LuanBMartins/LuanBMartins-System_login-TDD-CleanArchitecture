@@ -19,6 +19,7 @@ module.exports = class LoginRouter {
         throw new HttpError(400, 'invalid: Password', 'badRequest')
       }
       this.authUseCase.auth(email, password)
+      return HttpResponse.success(401)
     } catch (error) {
       return HttpResponse.error(error)
     }
