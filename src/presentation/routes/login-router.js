@@ -2,6 +2,10 @@ const HttpError = require('../helpers/error')
 const HttpResponse = require('../helpers/response')
 
 module.exports = class LoginRouter {
+  constructor (authUseCase) {
+    this.authUseCase = authUseCase
+  }
+
   route (httpRequest) {
     try {
       if (!httpRequest) {
@@ -14,6 +18,7 @@ module.exports = class LoginRouter {
       if (!password) {
         throw new HttpError(400, 'invalid: Password', 'badRequest')
       }
+      this.authUseCase.auth(email, password)
     } catch (error) {
       return HttpResponse.error(error)
     }
