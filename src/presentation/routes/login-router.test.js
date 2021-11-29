@@ -1,19 +1,15 @@
 const HttpError = require('../../utils/error')
+const HttpResponse = require('../../utils/response')
 
 class LoginRouter {
   route (httpRequest) {
     try {
-      const { email } = httpRequest.body
-      if (!email) {
-        throw new HttpError(400, 'undefined email')
+      const { email, password } = httpRequest.body
+      if (!email || !password) {
+        throw new HttpError(400, 'incorrect parameters!')
       }
     } catch (error) {
-      return {
-        statusCode: error.status,
-        body: {
-          message: error.message
-        }
-      }
+      return HttpResponse(error.status, error.message)
     }
   }
 }
@@ -27,7 +23,17 @@ describe('login router', () => {
       }
     }
     const httpResponse = sut.route(httpRequest)
-    console.log(httpResponse)
+    expect(httpResponse.statusCode).toBe(400)
+  })
+
+  test('Should return 400 if no password is provided', () => {
+    const sut = new LoginRouter()
+    const httpRequest = {
+      body: {
+        email: 'any'
+      }
+    }
+    const httpResponse = sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
   })
 })
