@@ -8,7 +8,7 @@ module.exports = class LoginRouter {
 
   route (httpRequest) {
     try {
-      if (!httpRequest) {
+      if (!httpRequest || !httpRequest.body || !this.authUseCase) {
         throw new HttpError(500, 'Unexpected Error!', 'Internal Server Error')
       }
       const { email, password } = httpRequest.body
@@ -18,8 +18,11 @@ module.exports = class LoginRouter {
       if (!password) {
         throw new HttpError(400, 'invalid: Password', 'badRequest')
       }
-      this.authUseCase.auth(email, password)
-      return HttpResponse.success(401)
+      const accessToken = this.authUseCase.auth(email, password)
+      if (!accessToken) {
+        throw new HttpError(401, 'unauthorized', 'unauthorizedError')
+      }
+      return HttpResponse.success(200)
     } catch (error) {
       return HttpResponse.error(error)
     }
