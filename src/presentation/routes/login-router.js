@@ -22,7 +22,7 @@ module.exports = class LoginRouter {
       if (!accessToken) {
         throw new HttpError(401, 'unauthorized', 'unauthorizedError')
       }
-      return HttpResponse.success(200)
+      return HttpResponse.success(200, accessToken)
     } catch (error) {
       return HttpResponse.error(error)
     }

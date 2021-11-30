@@ -10,7 +10,7 @@ const makeSut = () => {
   }
 
   const authUseCaseSpy = new AuthUseCaseSpy()
-  authUseCaseSpy.accessToken = 'valid_token'
+  authUseCaseSpy.accessToken = { token: 'valid_token' }
   const sut = new LoginRouter(authUseCaseSpy)
   return {
     sut,
@@ -85,6 +85,7 @@ describe('login router', () => {
     }
     const httpResponse = sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(200)
+    expect(httpResponse.body).toEqual({ token: 'valid_token' })
   })
 
   test('Should return 500 if no authUseCase is provided', () => {
