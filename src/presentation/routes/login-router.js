@@ -8,9 +8,6 @@ module.exports = class LoginRouter {
 
   route (httpRequest) {
     try {
-      if (!httpRequest || !httpRequest.body || !this.authUseCase) {
-        throw new HttpError(500, 'Unexpected Error!', 'Internal Server Error')
-      }
       const { email, password } = httpRequest.body
       if (!email) {
         throw new HttpError(400, 'invalid: Email', 'badRequest')

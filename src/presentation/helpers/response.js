@@ -8,9 +8,9 @@ module.exports = class HttpResponse {
 
   static error (error) {
     return {
-      statusCode: error.status,
+      statusCode: error.status || 500,
       body: {
-        message: error.message
+        message: !error.status ? 'Server Error!' : error.message
       }
     }
   }
