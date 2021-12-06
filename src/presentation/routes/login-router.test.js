@@ -1,6 +1,18 @@
 const LoginRouter = require('./login-router')
 
 const makeSut = () => {
+  const authUseCaseSpy = makeAuthUseCase()
+  const emailValidatorSpy = makeEmailValidator()
+
+  const sut = new LoginRouter(authUseCaseSpy, emailValidatorSpy)
+  return {
+    sut,
+    authUseCaseSpy,
+    emailValidatorSpy
+  }
+}
+
+const makeAuthUseCase = () => {
   class AuthUseCaseSpy {
     auth (email, password) {
       this.email = email
@@ -8,14 +20,20 @@ const makeSut = () => {
       return this.accessToken
     }
   }
-
   const authUseCaseSpy = new AuthUseCaseSpy()
   authUseCaseSpy.accessToken = { token: 'valid_token' }
-  const sut = new LoginRouter(authUseCaseSpy)
-  return {
-    sut,
-    authUseCaseSpy
+  return authUseCaseSpy
+}
+
+const makeEmailValidator = () => {
+  class EmailValidadorSpy {
+    isValid (email) {
+      return this.isEmailValid
+    }
   }
+  const emailValidadorSpy = new EmailValidadorSpy()
+  emailValidadorSpy.isEmailValid = true
+  return emailValidadorSpy
 }
 
 describe('login router', () => {
@@ -98,5 +116,19 @@ describe('login router', () => {
     }
     const httpResponse = sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
+  })
+
+  test('Should return 400 if an invalid email is provided', () => {
+    const { sut, emailValidatorSpy } = makeSut()
+    emailValidatorSpy.isEmailValid = false
+    const httpRequest = {
+      body: {
+        email: 'invalid_email@mail.com',
+        password: 'any_password'
+      }
+    }
+    const httpResponse = sut.route(httpRequest)
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body.message).toEqual('invalid: Email')
   })
 })
