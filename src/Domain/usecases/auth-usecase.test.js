@@ -5,13 +5,33 @@ class AuthUseCase {
     if (!email) {
       throw new Error(500)
     }
+    if (!password) {
+      throw new Error(500)
+    }
+
+    return null
+  }
+}
+
+const makeSut = () => {
+  const sut = new AuthUseCase()
+  return {
+    sut
   }
 }
 
 describe('Auth-usecase', () => {
-  test('Shoul throw if no email is provided', async () => {
-    const sut = new AuthUseCase()
+  test('Should throw if no email is provided', async () => {
+    // Invalid TESTE
+    const { sut } = makeSut()
     const promise = sut.auth()
-    expect(promise).rejects.toThrow(new Error(200))
+    expect(promise).rejects.toThrow(new Error(500, 'email', 'email'))
+  })
+
+  test('Should throw if no password is provided', async () => {
+    // Invalid TESTE
+    const { sut } = makeSut()
+    const promise = sut.auth('any_email@mail.com')
+    expect(promise).rejects.toThrow(new Error(500, 'password'))
   })
 })
