@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx jest --watch --silent"
+    "test": "npx jest --watch"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +21,7 @@
     "config": "^3.3.6",
     "express": "^4.17.1",
     "mysql2": "^2.3.3",
-    "sequelize": "^6.12.0-alpha.1"
+    "sequelize": "^6.12.0-alpha.1",
+    "validator": "^13.7.0"
   }
 }
