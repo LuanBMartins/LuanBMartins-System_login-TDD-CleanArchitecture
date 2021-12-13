@@ -1,4 +1,4 @@
-const HttpError = require('../helpers/error')
+const HttpError = require('../../utils/error')
 const HttpResponse = require('../helpers/response')
 
 module.exports = class LoginRouter {

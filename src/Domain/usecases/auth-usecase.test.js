@@ -1,4 +1,4 @@
-const Error = require('../../presentation/helpers/error')
+const Error = require('../../utils/error')
 
 class AuthUseCase {
   async auth (email, password) {
