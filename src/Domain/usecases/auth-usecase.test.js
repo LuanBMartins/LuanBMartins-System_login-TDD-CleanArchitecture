@@ -1,14 +1,30 @@
 const AuthUseCase = require('./auth-usecase')
 
 const makeSut = () => {
+  const tokenGeneratorSpy = makeTokenGenerator()
   const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
   const encrypterSpy = makeEncrypter()
-  const sut = new AuthUseCase({ loadUserByEmailRepository: loadUserByEmailRepositorySpy, encrypter: encrypterSpy })
+  const sut = new AuthUseCase(loadUserByEmailRepositorySpy, encrypterSpy, tokenGeneratorSpy)
   return {
     loadUserByEmailRepositorySpy,
     sut,
-    encrypterSpy
+    encrypterSpy,
+    tokenGeneratorSpy
   }
+}
+
+const makeTokenGenerator = () => {
+  class TokenGenerator {
+    generate (userid) {
+      this.userId = userid
+      return this.acessToken
+    }
+  }
+
+  const tokenGenerator = new TokenGenerator()
+  tokenGenerator.acessToken = 'any_token'
+
+  return tokenGenerator
 }
 
 const makeEncrypter = () => {
@@ -16,10 +32,13 @@ const makeEncrypter = () => {
     async compare (password, hashedPassword) {
       this.password = password
       this.hashedPassword = hashedPassword
+      return this.isValid
     }
   }
 
   const encrypterSpy = new EncrypterSpy()
+  encrypterSpy.isValid = true
+
   return encrypterSpy
 }
 
@@ -67,7 +86,8 @@ describe('Auth-usecase', () => {
   })
 
   test('Should return null if an invalid password is provided', async () => {
-    const { sut } = makeSut()
+    const { sut, encrypterSpy } = makeSut()
+    encrypterSpy.isValid = false
     const acessToken = await sut.auth('invalid_email@mail.com', 'any_password')
     expect(acessToken).toBeNull()
   })
@@ -77,5 +97,11 @@ describe('Auth-usecase', () => {
     await sut.auth('valid_email@mail.com', 'any_password')
     expect(encrypterSpy.password).toBe('any_password')
     expect(encrypterSpy.hashedPassword).toBe(loadUserByEmailRepositorySpy.user.password)
+  })
+
+  test('Should call TokenGenerator with correct userId', async () => {
+    const { sut, loadUserByEmailRepositorySpy, tokenGeneratorSpy } = makeSut()
+    await sut.auth('valid_email@mail.com', 'valid_password')
+    expect(tokenGeneratorSpy.userId).toBe(loadUserByEmailRepositorySpy.user.id)
   })
 })
