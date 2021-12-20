@@ -2,11 +2,25 @@ const AuthUseCase = require('./auth-usecase')
 
 const makeSut = () => {
   const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
-  const sut = new AuthUseCase({ loadUserByEmailRepository: loadUserByEmailRepositorySpy })
+  const encrypterSpy = makeEncrypter()
+  const sut = new AuthUseCase({ loadUserByEmailRepository: loadUserByEmailRepositorySpy, encrypter: encrypterSpy })
   return {
     loadUserByEmailRepositorySpy,
-    sut
+    sut,
+    encrypterSpy
   }
+}
+
+const makeEncrypter = () => {
+  class EncrypterSpy {
+    async compare (password, hashedPassword) {
+      this.password = password
+      this.hashedPassword = hashedPassword
+    }
+  }
+
+  const encrypterSpy = new EncrypterSpy()
+  return encrypterSpy
 }
 
 const makeLoadUserByEmailRepository = () => {
@@ -56,5 +70,12 @@ describe('Auth-usecase', () => {
     const { sut } = makeSut()
     const acessToken = await sut.auth('invalid_email@mail.com', 'any_password')
     expect(acessToken).toBeNull()
+  })
+
+  test('Should call Encrypter with correct values', async () => {
+    const { sut, loadUserByEmailRepositorySpy, encrypterSpy } = makeSut()
+    await sut.auth('valid_email@mail.com', 'any_password')
+    expect(encrypterSpy.password).toBe('any_password')
+    expect(encrypterSpy.hashedPassword).toBe(loadUserByEmailRepositorySpy.user.password)
   })
 })
