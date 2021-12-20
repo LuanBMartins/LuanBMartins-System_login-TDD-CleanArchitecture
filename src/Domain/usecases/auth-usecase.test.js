@@ -1,4 +1,3 @@
-const Error = require('../../utils/error')
 const AuthUseCase = require('./auth-usecase')
 
 const makeSut = () => {
@@ -30,14 +29,14 @@ describe('Auth-usecase', () => {
     // Invalid TESTE
     const { sut } = makeSut()
     const promise = sut.auth()
-    expect(promise).rejects.toThrow(new Error(500, 'email', 'email'))
+    expect(promise).rejects.toThrow()
   })
 
   test('Should throw if no password is provided', () => {
     // Invalid TESTE
     const { sut } = makeSut()
     const promise = sut.auth('any_email@mail.com')
-    expect(promise).rejects.toThrow(new Error(500, 'password'))
+    expect(promise).rejects.toThrow()
   })
 
   test('Should call LoadUserByEmailRepository with correct email', async () => {
