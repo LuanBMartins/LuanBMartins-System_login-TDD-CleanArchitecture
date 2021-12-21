@@ -1,7 +1,7 @@
 const Error = require('../../utils/error')
 
 module.exports = class AuthUseCase {
-  constructor (loadUserByEmailRepository, encrypter, tokenGenerator) {
+  constructor ({ loadUserByEmailRepository, encrypter, tokenGenerator }) {
     this.loadUserByEmailRepository = loadUserByEmailRepository
     this.encrypter = encrypter
     this.tokenGenerator = tokenGenerator
@@ -15,14 +15,11 @@ module.exports = class AuthUseCase {
       throw new Error(500)
     }
     const user = await this.loadUserByEmailRepository.load(email)
-    if (!user) {
-      return null
+    const isValid = user && await this.encrypter.compare(password, user.password)
+
+    if (isValid) {
+      return this.tokenGenerator.generate(user.id)
     }
-    const isValid = await this.encrypter.compare(password, user.password)
-    if (!isValid) {
-      return null
-    }
-    await this.tokenGenerator.generate(user.id)
-    return true
+    return null
   }
 }
